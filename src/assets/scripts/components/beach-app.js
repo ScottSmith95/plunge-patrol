@@ -189,11 +189,6 @@ class BeachApp extends HTMLElement {
   }
 
   updateBannerFromLiveState() {
-    if (this.liveState.status === 'ready' && this.liveState.temperature === 'ready') {
-      this.setBanner('Live county feeds are ready. Safe-to-enter and temperature filters now use current remote data.', 'success');
-      return;
-    }
-
     if (this.liveState.status === 'error' && this.liveState.temperature === 'error') {
       this.setBanner('The county feeds did not load for global filters. Beach modules can still retry independently inside each panel.', 'warning');
       return;
@@ -209,7 +204,49 @@ class BeachApp extends HTMLElement {
       return;
     }
 
+    const staleStatusSummary = this.getStaleStatusSummary();
+
+    if (this.liveState.status === 'ready' && staleStatusSummary.shouldWarn) {
+      const coverageLabel = staleStatusSummary.staleCount === staleStatusSummary.comparableCount
+        ? 'All monitored beaches currently show'
+        : `Most monitored beaches (${staleStatusSummary.staleCount} of ${staleStatusSummary.comparableCount}) currently show`;
+
+      this.setBanner(
+        `${coverageLabel} "No recent data" in the county status feed. Treat temperature readings as historical context rather than live clearance. King County typically provides regular data updates through May–September.`,
+        'warning'
+      );
+      return;
+    }
+
+    if (this.liveState.status === 'ready' && this.liveState.temperature === 'ready') {
+      this.setBanner('Live county feeds are ready. Safe-to-enter and temperature filters now use current remote data.', 'success');
+      return;
+    }
+
     this.setBanner('Live county feeds are still loading.', 'neutral');
+  }
+
+  getStaleStatusSummary() {
+    let staleCount = 0;
+    let comparableCount = 0;
+
+    for (const entry of this.liveConditions.values()) {
+      if (!entry.status?.hasSourceRecord) {
+        continue;
+      }
+
+      comparableCount += 1;
+
+      if (entry.status.officialStatus === 'No recent data') {
+        staleCount += 1;
+      }
+    }
+
+    return {
+      staleCount,
+      comparableCount,
+      shouldWarn: comparableCount > 0 && staleCount > comparableCount / 2
+    };
   }
 
   renderShell() {
