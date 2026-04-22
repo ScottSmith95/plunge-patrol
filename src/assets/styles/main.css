@@ -480,6 +480,62 @@ beach-filters {
   background: white;
 }
 
+.map-options-popover {
+  inset: auto;
+  margin: 0;
+  padding: 0.3rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(20, 42, 45, 0.14);
+  background: white;
+  box-shadow: 0 10px 22px rgba(20, 42, 45, 0.16);
+  min-inline-size: 0;
+}
+
+.map-options-popover:popover-open {
+  display: block;
+  position: absolute;
+  position-anchor: inherit;
+  position-area: bottom span-left;
+  margin-block-start: 0.4rem;
+  inline-size: max-content;
+  max-inline-size: min(14rem, calc(100vw - 2rem));
+}
+
+.map-options-popover__link {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.65rem;
+  color: var(--accent-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.map-options-popover__link:hover,
+.map-options-popover__link:focus-visible {
+  background: var(--surface-soft);
+  outline: none;
+}
+
+.map-options-popover__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-options-popover__list li {
+  margin: 0;
+}
+
+.map-options-popover__label {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.65rem;
+  color: var(--ink-muted);
+}
+
 .skeleton-stack {
   display: grid;
   gap: 0.55rem;
