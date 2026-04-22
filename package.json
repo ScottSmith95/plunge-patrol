@@ -1,0 +1,22 @@
+{
+  "name": "cold-plunge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:css": "postcss src/assets/styles/main.css -o src/assets/styles/app.css",
+    "build": "npm run build:css && eleventy",
+    "dev": "node ./scripts/dev.mjs"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.2"
+  },
+  "devDependencies": {
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.0",
+    "postcss-preset-env": "^10.1.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

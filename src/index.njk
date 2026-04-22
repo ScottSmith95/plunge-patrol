@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seattle Cold Plunge Beaches</title>
+  <meta name="description" content="King County lake-beach conditions, organized beach by beach for Seattle cold plungers.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles/app.css">
+  <script type="module" src="/assets/scripts/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-shell">
+    <div class="hero">
+      <p class="eyebrow">King County lake beaches</p>
+      <h1>Cold plunge conditions, one beach at a time.</h1>
+      <p class="hero-copy">
+        This lightweight client-side app organizes King County swim-beach data into beach-specific panels.
+        Each module loads on its own, keeps its own failure state, and uses the county&rsquo;s official public feeds.
+      </p>
+      <div class="hero-meta">
+        <p>Temperature is shown as the latest recorded value. Safety always comes from the county&rsquo;s official beach status.</p>
+        <p>Outside the May to September monitoring season, some beaches may show &ldquo;No recent data&rdquo; with an older recorded temperature.</p>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <beach-app></beach-app>
+  </main>
+
+  <footer class="site-footer">
+    <p>Data sources: public ArcGIS layers from King County beach status and water temperature monitoring.</p>
+    <p>
+      <a href="https://kingcounty.gov/en/dept/dnrp/nature-recreation/parks-recreation/king-county-parks/water-recreation/swimming-beach-bacteria-temperature">Official county page</a>
+    </p>
+  </footer>
+</body>
+</html>
