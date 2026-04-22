@@ -515,6 +515,21 @@ beach-filters {
   outline: none;
 }
 
+.map-options-popover__list {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-options-popover__label {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.65rem;
+  color: var(--ink-muted);
+}
+
 .skeleton-stack {
   display: grid;
   gap: 0.55rem;

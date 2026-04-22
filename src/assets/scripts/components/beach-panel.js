@@ -10,6 +10,20 @@ function buildAppleMapsUrl(siteName, city) {
   return `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
 }
 
+function buildGoogleMapsUrl(mapsUrl, siteName, city) {
+  if (mapsUrl) {
+    return mapsUrl;
+  }
+
+  const query = [siteName, city, 'King County WA'].filter(Boolean).join(', ');
+
+  if (!query) {
+    return null;
+  }
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 function sanitizeToken(value, fallback = 'beach') {
   const normalized = String(value || fallback).toLowerCase().replace(/[^a-z0-9-]/g, '-');
 
@@ -134,9 +148,9 @@ class BeachPanel extends HTMLElement {
   render() {
     const siteName = this.getAttribute('site-name') || 'Unknown beach';
     const city = this.getAttribute('city') || 'Unknown city';
-    const mapsUrl = this.getAttribute('maps-url');
+    const googleMapsUrl = buildGoogleMapsUrl(this.getAttribute('maps-url'), siteName, city);
     const appleMapsUrl = buildAppleMapsUrl(siteName, city);
-    const hasMapOptions = Boolean(mapsUrl || appleMapsUrl);
+    const hasMapOptions = Boolean(googleMapsUrl || appleMapsUrl);
     const mapToken = sanitizeToken(this.slug || this.beachId);
     const mapMenuId = `map-menu-${mapToken}`;
     const mapAnchor = `--map-anchor-${mapToken}`;
@@ -165,12 +179,13 @@ class BeachPanel extends HTMLElement {
                 id="${escapeHtml(mapMenuId)}"
                 class="map-options-popover"
                 popover="auto"
-                role="menu"
                 aria-label="Map options for ${escapeHtml(siteName)}"
                 style="position-anchor: ${escapeHtml(mapAnchor)};"
               >
-                ${mapsUrl ? `<a class="map-options-popover__link" role="menuitem" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">Google Maps</a>` : ''}
-                ${appleMapsUrl ? `<a class="map-options-popover__link" role="menuitem" href="${escapeHtml(appleMapsUrl)}" target="_blank" rel="noopener noreferrer">Apple Maps</a>` : ''}
+                <ul class="map-options-popover__list">
+                  ${googleMapsUrl ? `<li><a class="map-options-popover__link" href="${escapeHtml(googleMapsUrl)}" target="_blank" rel="noopener noreferrer">Google Maps</a></li>` : '<li><span class="map-options-popover__label">Google Maps unavailable</span></li>'}
+                  ${appleMapsUrl ? `<li><a class="map-options-popover__link" href="${escapeHtml(appleMapsUrl)}" target="_blank" rel="noopener noreferrer">Apple Maps</a></li>` : '<li><span class="map-options-popover__label">Apple Maps unavailable</span></li>'}
+                </ul>
               </div>
             ` : ''}
           </div>
