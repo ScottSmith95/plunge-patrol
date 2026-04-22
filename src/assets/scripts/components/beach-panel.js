@@ -1,5 +1,15 @@
 import { escapeHtml } from '../lib/formatters.js';
 
+function buildAppleMapsUrl(siteName, city) {
+  const query = [siteName, city, 'King County WA'].filter(Boolean).join(', ');
+
+  if (!query) {
+    return null;
+  }
+
+  return `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
+}
+
 class BeachPanel extends HTMLElement {
   static get observedAttributes() {
     return ['favorite', 'plunge-threshold'];
@@ -119,6 +129,7 @@ class BeachPanel extends HTMLElement {
     const siteName = this.getAttribute('site-name') || 'Unknown beach';
     const city = this.getAttribute('city') || 'Unknown city';
     const mapsUrl = this.getAttribute('maps-url');
+    const appleMapsUrl = buildAppleMapsUrl(siteName, city);
 
     this.innerHTML = `
       <article class="beach-panel" id="${escapeHtml(this.slug)}">
@@ -129,7 +140,8 @@ class BeachPanel extends HTMLElement {
           </div>
           <div class="beach-panel__actions">
             <button class="panel-button" type="button" data-action="toggle-favorite"></button>
-            ${mapsUrl ? `<a class="panel-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">Map</a>` : ''}
+            ${mapsUrl ? `<a class="panel-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">Google Maps</a>` : ''}
+            ${appleMapsUrl ? `<a class="panel-link" href="${escapeHtml(appleMapsUrl)}" target="_blank" rel="noopener noreferrer">Apple Maps</a>` : ''}
           </div>
         </header>
         <div class="beach-panel__modules">
