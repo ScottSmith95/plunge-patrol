@@ -1,12 +1,13 @@
 {
-  "name": "cold-plunge",
+  "name": "plunge-patrol",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build:css": "postcss src/assets/styles/main.css -o src/assets/styles/app.css",
     "build": "npm run build:css && eleventy",
-    "dev": "node ./scripts/dev.mjs"
+    "dev": "node ./scripts/dev.mjs",
+    "serve": "npx serve _site"
   },
   "dependencies": {
     "@11ty/eleventy": "^3.1.2"

@@ -1,17 +1,37 @@
-const PREFERENCES_KEY = 'cold-plunge:preferences';
-const FAVORITES_KEY = 'cold-plunge:favorites';
+const LEGACY_PREFERENCES_KEY = 'cold-plunge:preferences';
+const LEGACY_FAVORITES_KEY = 'cold-plunge:favorites';
+const PREFERENCES_KEY = 'plunge-patrol:preferences';
+const FAVORITES_KEY = 'plunge-patrol:favorites';
+
+function readJson(key) {
+  const value = window.localStorage.getItem(key);
+
+  return value ? JSON.parse(value) : null;
+}
+
+function migrateValue(nextKey, legacyKey) {
+  if (window.localStorage.getItem(nextKey)) {
+    return;
+  }
+
+  const legacyValue = window.localStorage.getItem(legacyKey);
+
+  if (legacyValue) {
+    window.localStorage.setItem(nextKey, legacyValue);
+  }
+}
 
 export function readPreferences() {
   try {
-    const value = window.localStorage.getItem(PREFERENCES_KEY);
+    migrateValue(PREFERENCES_KEY, LEGACY_PREFERENCES_KEY);
 
-    if (!value) {
+    const parsed = readJson(PREFERENCES_KEY);
+
+    if (!parsed) {
       return {
         plungeThreshold: 60
       };
     }
-
-    const parsed = JSON.parse(value);
 
     return {
       plungeThreshold: Number.isFinite(parsed?.plungeThreshold) ? parsed.plungeThreshold : 60
@@ -29,8 +49,9 @@ export function writePreferences(preferences) {
 
 export function readFavorites() {
   try {
-    const value = window.localStorage.getItem(FAVORITES_KEY);
-    const parsed = value ? JSON.parse(value) : [];
+    migrateValue(FAVORITES_KEY, LEGACY_FAVORITES_KEY);
+
+    const parsed = readJson(FAVORITES_KEY) ?? [];
 
     return new Set(Array.isArray(parsed) ? parsed : []);
   } catch {
