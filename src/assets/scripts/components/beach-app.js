@@ -2,6 +2,8 @@ import beachClient from '../lib/beach-client.js';
 import { clamp, escapeHtml, normalizeText } from '../lib/formatters.js';
 import { readFavorites, readPreferences, writeFavorites, writePreferences } from '../lib/storage.js';
 
+const RECENT_READING_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+
 class BeachApp extends HTMLElement {
   constructor() {
     super();
@@ -210,9 +212,12 @@ class BeachApp extends HTMLElement {
       const coverageLabel = staleStatusSummary.staleCount === staleStatusSummary.comparableCount
         ? 'All monitored beaches currently show'
         : `Most monitored beaches (${staleStatusSummary.staleCount} of ${staleStatusSummary.comparableCount}) currently show`;
+      const warningMessage = staleStatusSummary.staleCount === staleStatusSummary.explicitNoRecentCount
+        ? `${coverageLabel} "No recent data" in the county status feed. Treat temperature readings as historical context rather than live data. King County typically provides regular data updates through May–September.`
+        : `${staleStatusSummary.staleCount === staleStatusSummary.comparableCount ? 'All monitored beaches currently lack' : `Most monitored beaches (${staleStatusSummary.staleCount} of ${staleStatusSummary.comparableCount}) currently lack`} a recent county reading. Treat temperature readings as historical context rather than live data. King County typically provides regular data updates through May–September.`;
 
       this.setBanner(
-        `${coverageLabel} "No recent data" in the county status feed. Treat temperature readings as historical context rather than live clearance. King County typically provides regular data updates through May–September.`,
+        warningMessage,
         'warning'
       );
       return;
@@ -229,15 +234,22 @@ class BeachApp extends HTMLElement {
   getStaleStatusSummary() {
     let staleCount = 0;
     let comparableCount = 0;
+    let explicitNoRecentCount = 0;
 
     for (const entry of this.liveConditions.values()) {
-      if (!entry.status?.hasSourceRecord) {
+      if (!entry.status && !entry.temperature) {
         continue;
       }
 
       comparableCount += 1;
 
-      if (entry.status.officialStatus === 'No recent data') {
+      const explicitlyNoRecent = entry.status?.officialStatus === 'No recent data';
+
+      if (explicitlyNoRecent) {
+        explicitNoRecentCount += 1;
+      }
+
+      if (explicitlyNoRecent || !this.hasRecentReading(entry.temperature)) {
         staleCount += 1;
       }
     }
@@ -245,8 +257,19 @@ class BeachApp extends HTMLElement {
     return {
       staleCount,
       comparableCount,
+      explicitNoRecentCount,
       shouldWarn: comparableCount > 0 && staleCount > comparableCount / 2
     };
+  }
+
+  hasRecentReading(temperature) {
+    if (!Number.isFinite(temperature?.sampleTimestamp)) {
+      return false;
+    }
+
+    const ageMs = Date.now() - temperature.sampleTimestamp;
+
+    return ageMs >= 0 && ageMs <= RECENT_READING_WINDOW_MS;
   }
 
   renderShell() {
