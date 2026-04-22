@@ -330,28 +330,15 @@ beach-filters {
   line-height: 1.05;
 }
 
-.panel-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  margin-top: 0.75rem;
-}
-
-.panel-tags span,
 .status-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 2rem;
   padding: 0.28rem 0.72rem;
-  border-radius: 999px;
+  border-radius: 0.75rem;
   font-size: 0.86rem;
   font-weight: 700;
-}
-
-.panel-tags span {
-  color: var(--ink-muted);
-  background: rgba(255, 255, 255, 0.72);
 }
 
 .beach-panel__actions {
@@ -526,6 +513,14 @@ beach-filters {
 
 .site-footer p {
   margin: 0.25rem 0;
+}
+
+.site-footer__disclaimer {
+  max-width: 56rem;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(20, 42, 45, 0.12);
+  font-size: 0.92rem;
 }
 
 @keyframes shimmer {

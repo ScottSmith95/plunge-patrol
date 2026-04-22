@@ -118,7 +118,6 @@ class BeachPanel extends HTMLElement {
   render() {
     const siteName = this.getAttribute('site-name') || 'Unknown beach';
     const city = this.getAttribute('city') || 'Unknown city';
-    const waterBody = this.getAttribute('water-body') || 'Unknown water body';
     const mapsUrl = this.getAttribute('maps-url');
 
     this.innerHTML = `
@@ -127,10 +126,6 @@ class BeachPanel extends HTMLElement {
           <div class="beach-panel__copy">
             <p class="panel-kicker">${escapeHtml(city)}</p>
             <h2>${escapeHtml(siteName)}</h2>
-            <div class="panel-tags">
-              <span>${escapeHtml(waterBody)}</span>
-              <span>Beach group</span>
-            </div>
           </div>
           <div class="beach-panel__actions">
             <button class="panel-button" type="button" data-action="toggle-favorite"></button>

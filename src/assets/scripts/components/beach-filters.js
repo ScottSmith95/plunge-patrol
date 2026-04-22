@@ -184,7 +184,7 @@ class BeachFilters extends HTMLElement {
         <form class="filters-form" novalidate>
           <label class="field">
             <span>Search beaches or aliases</span>
-            <input type="search" name="q" placeholder="Try Magnuson or Magnussen">
+            <input type="search" name="q" placeholder="Magnuson Park">
           </label>
           <label class="field">
             <span>Plunge threshold</span>

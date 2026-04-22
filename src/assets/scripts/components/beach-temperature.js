@@ -43,14 +43,14 @@ class BeachTemperature extends AsyncBeachModule {
   renderSuccessContent(data) {
     if (!data.hasSourceRecord || !Number.isFinite(data.waterTempF)) {
       return `
-        <p class="module-kicker">No temperature record</p>
+        <p class="module-kicker">No temperature available</p>
         <p class="module-copy">The county feed does not include a recent temperature value for this beach.</p>
       `;
     }
 
     const threshold = this.plungeThreshold;
     const delta = Math.round((data.waterTempF - threshold) * 10) / 10;
-    const label = data.officialStatus === 'No recent data' ? 'Latest recorded temperature' : 'Most recent county temperature';
+    const label = data.officialStatus === 'No recent data' ? 'Latest temp' : 'Most recent temp';
 
     let recommendation = `Above your ${threshold}°F plunge threshold by ${Math.abs(delta).toFixed(1)}°F.`;
 
