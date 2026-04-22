@@ -2,3 +2,5 @@
 node_modules
 _site
 src/assets/styles/app.css
+.vercel
+.env*.local
