@@ -21,6 +21,14 @@ function migrateValue(nextKey, legacyKey) {
   }
 }
 
+function writeJson(keys, value) {
+  const serialized = JSON.stringify(value);
+
+  for (const key of keys) {
+    window.localStorage.setItem(key, serialized);
+  }
+}
+
 export function readPreferences() {
   try {
     migrateValue(PREFERENCES_KEY, LEGACY_PREFERENCES_KEY);
@@ -44,7 +52,11 @@ export function readPreferences() {
 }
 
 export function writePreferences(preferences) {
-  window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
+  try {
+    writeJson([PREFERENCES_KEY, LEGACY_PREFERENCES_KEY], preferences);
+  } catch {
+    // Ignore storage failures so the UI keeps working even if persistence is unavailable.
+  }
 }
 
 export function readFavorites() {
@@ -60,5 +72,9 @@ export function readFavorites() {
 }
 
 export function writeFavorites(favorites) {
-  window.localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favorites]));
+  try {
+    writeJson([FAVORITES_KEY, LEGACY_FAVORITES_KEY], [...favorites]);
+  } catch {
+    // Ignore storage failures so the UI keeps working even if persistence is unavailable.
+  }
 }
