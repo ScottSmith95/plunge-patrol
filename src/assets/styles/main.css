@@ -71,6 +71,10 @@ input {
   outline-offset: 2px;
 }
 
+input[type="checkbox"] {
+  accent-color: color-mix(in srgb, var(--accent) 60%, white);
+}
+
 main,
 .site-shell,
 .site-footer {
