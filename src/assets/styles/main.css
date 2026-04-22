@@ -495,7 +495,7 @@ beach-filters {
   display: block;
   position: absolute;
   position-anchor: inherit;
-  position-area: bottom right;
+  position-area: bottom span-left;
   margin-block-start: 0.4rem;
   inline-size: max-content;
   max-inline-size: min(14rem, calc(100vw - 2rem));
