@@ -31,6 +31,8 @@ This project is a small static web app for checking King County lake-beach condi
 - `src/assets/data/beaches.json` is the local source of truth for supported beaches.
 - `src/assets/scripts/lib/beach-client.js` handles memoized remote fetches and beach-level joins.
 - `src/assets/scripts/components/beach-app.js` is the root coordinator for filters, favorites, and panel rendering.
+- Root-level PWA assets live in `src/`, not under `src/assets/`. This currently includes `favicon.svg`, `site.webmanifest`, `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, and `icon-maskable-512.png`.
+- `eleventy.config.js` passthrough-copies those root-level PWA assets to the root of `_site/` so the site can reference `/favicon.svg`, `/site.webmanifest`, and `/icon-*.png` directly.
 - Each beach module should manage its own `idle -> loading -> success | error` UI state.
 - Join live records by `siteID` first, then `locator`. Only use name-based fallback when the manifest explicitly provides `joinName`.
 
@@ -39,6 +41,7 @@ This project is a small static web app for checking King County lake-beach condi
 - Edit source files only.
 - Do not edit `_site/`.
 - Do not edit `src/assets/styles/app.css` directly; it is generated from `src/assets/styles/main.css`.
+- If the favicon or app icon branding changes, update both `src/favicon.svg` and the generated PNG/maskable icon set so the manifest and install surfaces stay in sync.
 - Keep the client framework-free.
 - Prefer plain functions and explicit DOM behavior over abstractions.
 - Keep custom elements in light DOM unless there is a strong reason to change that.
@@ -63,6 +66,8 @@ This project is a small static web app for checking King County lake-beach condi
 - Run `npm run build` after meaningful code or style changes.
 - For docs-only changes, a build is optional.
 - If you change filters, favorites, or module loading behavior, validate those flows manually when possible.
+- For manifest/PWA verification on this machine, Google Chrome stable may not be installed. Microsoft Edge plus Chromium DevTools protocol and `lighthouse@11` is a reliable fallback for checking installability, splash-screen, and maskable-icon audits.
+- A simple local static server may return `404` for `/_vercel/insights/script.js` and `/_vercel/speed-insights/script.js`; do not confuse those local-only misses with manifest failures.
 
 ## Known Product Constraints
 
