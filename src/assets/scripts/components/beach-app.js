@@ -1,8 +1,35 @@
 import beachClient from '../lib/beach-client.js';
-import { clamp, escapeHtml, normalizeText } from '../lib/formatters.js';
+import { clamp, normalizeText } from '../lib/formatters.js';
 import { readFavorites, readPreferences, writeFavorites, writePreferences } from '../lib/storage.js';
 
 const RECENT_READING_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+
+const appShellTemplate = document.createElement('template');
+
+appShellTemplate.innerHTML = `
+  <section class="app-surface">
+    <div class="app-banner" data-role="banner"></div>
+    <beach-filters></beach-filters>
+    <div class="beach-grid" data-role="grid"></div>
+    <article class="empty-state" data-role="empty-state" hidden>
+      <h2>No beaches match those filters</h2>
+      <p>Try clearing a live filter or searching with a broader term.</p>
+    </article>
+  </section>
+`;
+
+const fatalErrorTemplate = document.createElement('template');
+
+fatalErrorTemplate.innerHTML = `
+  <section class="app-surface">
+    <article class="fatal-card">
+      <p class="panel-kicker">Manifest error</p>
+      <h2>Could not load the beach list</h2>
+      <p data-role="error-message"></p>
+      <button class="module-button" type="button" data-action="retry-app">Retry app</button>
+    </article>
+  </section>
+`;
 
 class BeachApp extends HTMLElement {
   constructor() {
@@ -273,17 +300,7 @@ class BeachApp extends HTMLElement {
   }
 
   renderShell() {
-    this.innerHTML = `
-      <section class="app-surface">
-        <div class="app-banner" data-role="banner"></div>
-        <beach-filters></beach-filters>
-        <div class="beach-grid" data-role="grid"></div>
-        <article class="empty-state" data-role="empty-state" hidden>
-          <h2>No beaches match those filters</h2>
-          <p>Try clearing a live filter or searching with a broader term.</p>
-        </article>
-      </section>
-    `;
+    this.replaceChildren(appShellTemplate.content.cloneNode(true));
 
     this.banner = this.querySelector('[data-role="banner"]');
     this.grid = this.querySelector('[data-role="grid"]');
@@ -292,16 +309,10 @@ class BeachApp extends HTMLElement {
   }
 
   renderFatalError(error) {
-    this.innerHTML = `
-      <section class="app-surface">
-        <article class="fatal-card">
-          <p class="panel-kicker">Manifest error</p>
-          <h2>Could not load the beach list</h2>
-          <p>${escapeHtml(error?.message || 'Unknown error')}</p>
-          <button class="module-button" type="button" data-action="retry-app">Retry app</button>
-        </article>
-      </section>
-    `;
+    const fragment = fatalErrorTemplate.content.cloneNode(true);
+
+    fragment.querySelector('[data-role="error-message"]').textContent = error?.message || 'Unknown error';
+    this.replaceChildren(fragment);
   }
 
   renderPanels() {

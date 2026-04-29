@@ -4,6 +4,43 @@ const PLUNGE_THRESHOLD_MIN = 45;
 const PLUNGE_THRESHOLD_MAX = 75;
 const DEFAULT_PLUNGE_THRESHOLD = 60;
 
+const filtersTemplate = document.createElement('template');
+
+filtersTemplate.innerHTML = `
+  <section class="filters-card">
+    <div class="filters-card__header">
+      <div>
+        <p class="panel-kicker">Filters</p>
+        <h2>Find your beach set</h2>
+      </div>
+      <button class="panel-link panel-link--ghost" type="button" data-action="reset-filters">Clear filters</button>
+    </div>
+    <form class="filters-form" novalidate>
+      <label class="field">
+        <span>Search beaches or aliases</span>
+        <input type="search" name="q" placeholder="Magnuson Park">
+      </label>
+      <label class="field">
+        <span>Plunge threshold</span>
+        <div class="threshold-field">
+          <input type="number" name="plunge" min="${PLUNGE_THRESHOLD_MIN}" max="${PLUNGE_THRESHOLD_MAX}" step="1" inputmode="numeric">
+          <strong data-role="threshold-value"></strong>
+        </div>
+      </label>
+      <fieldset class="toggle-grid">
+        <label><input type="checkbox" name="seattle"> Seattle only</label>
+        <label><input type="checkbox" name="safe"> Safe to enter</label>
+        <label><input type="checkbox" name="cold"> At or below threshold</label>
+        <label><input type="checkbox" name="favorites"> Favorites only</label>
+      </fieldset>
+    </form>
+    <div class="filters-footer">
+      <p class="result-count" data-role="result-count"></p>
+      <p class="filter-note" data-role="filter-note" hidden></p>
+    </div>
+  </section>
+`;
+
 class BeachFilters extends HTMLElement {
   constructor() {
     super();
@@ -232,40 +269,7 @@ class BeachFilters extends HTMLElement {
   }
 
   render() {
-    this.innerHTML = `
-      <section class="filters-card">
-        <div class="filters-card__header">
-          <div>
-            <p class="panel-kicker">Filters</p>
-            <h2>Find your beach set</h2>
-          </div>
-          <button class="panel-link panel-link--ghost" type="button" data-action="reset-filters">Clear filters</button>
-        </div>
-        <form class="filters-form" novalidate>
-          <label class="field">
-            <span>Search beaches or aliases</span>
-            <input type="search" name="q" placeholder="Magnuson Park">
-          </label>
-          <label class="field">
-            <span>Plunge threshold</span>
-            <div class="threshold-field">
-              <input type="number" name="plunge" min="${PLUNGE_THRESHOLD_MIN}" max="${PLUNGE_THRESHOLD_MAX}" step="1" inputmode="numeric">
-              <strong data-role="threshold-value"></strong>
-            </div>
-          </label>
-          <fieldset class="toggle-grid">
-            <label><input type="checkbox" name="seattle"> Seattle only</label>
-            <label><input type="checkbox" name="safe"> Safe to enter</label>
-            <label><input type="checkbox" name="cold"> At or below threshold</label>
-            <label><input type="checkbox" name="favorites"> Favorites only</label>
-          </fieldset>
-        </form>
-        <div class="filters-footer">
-          <p class="result-count" data-role="result-count"></p>
-          <p class="filter-note" data-role="filter-note" hidden></p>
-        </div>
-      </section>
-    `;
+    this.replaceChildren(filtersTemplate.content.cloneNode(true));
 
     this.searchInput = this.querySelector('input[name="q"]');
     this.plungeThresholdInput = this.querySelector('input[name="plunge"]');
