@@ -1,5 +1,9 @@
 import { clamp } from '../lib/formatters.js';
 
+const PLUNGE_THRESHOLD_MIN = 45;
+const PLUNGE_THRESHOLD_MAX = 75;
+const DEFAULT_PLUNGE_THRESHOLD = 60;
+
 class BeachFilters extends HTMLElement {
   constructor() {
     super();
@@ -10,7 +14,7 @@ class BeachFilters extends HTMLElement {
       safeOnly: false,
       coldOnly: false,
       favoritesOnly: false,
-      plungeThreshold: 60,
+      plungeThreshold: DEFAULT_PLUNGE_THRESHOLD,
       visibleCount: 0,
       totalCount: 0,
       liveStatusState: 'idle',
@@ -75,19 +79,75 @@ class BeachFilters extends HTMLElement {
     this.pushChange();
   }
 
-  handleInput() {
-    this.model = {
-      ...this.model,
+  handleInput(event) {
+    const isPlungeThresholdEdit = event.target === this.plungeThresholdInput;
+    const patch = {
       q: this.searchInput.value.trim(),
       seattleOnly: this.seattleOnly.checked,
       safeOnly: this.safeOnly.checked,
       coldOnly: this.coldOnly.checked,
-      favoritesOnly: this.favoritesOnly.checked,
-      plungeThreshold: clamp(Number(this.plungeThresholdInput.value) || 60, 45, 75)
+      favoritesOnly: this.favoritesOnly.checked
     };
 
-    this.syncControls();
+    if (isPlungeThresholdEdit) {
+      const shouldClamp = event.type === 'change';
+      const plungeThreshold = this.getEditablePlungeThreshold(shouldClamp);
+
+      if (!Number.isFinite(plungeThreshold)) {
+        this.model = {
+          ...this.model,
+          ...patch
+        };
+
+        if (shouldClamp) {
+          this.syncControls();
+        }
+
+        this.syncSummary();
+        return;
+      }
+
+      patch.plungeThreshold = plungeThreshold;
+    }
+
+    this.model = {
+      ...this.model,
+      ...patch
+    };
+
+    if (isPlungeThresholdEdit) {
+      this.thresholdValue.textContent = `${this.model.plungeThreshold}°F`;
+
+      if (event.type === 'change') {
+        this.plungeThresholdInput.value = String(this.model.plungeThreshold);
+      }
+    }
+
     this.pushChange();
+  }
+
+  getEditablePlungeThreshold(shouldClamp) {
+    const rawValue = this.plungeThresholdInput.value.trim();
+
+    if (rawValue === '') {
+      return shouldClamp ? this.model.plungeThreshold : Number.NaN;
+    }
+
+    const value = Number(rawValue);
+
+    if (!Number.isFinite(value)) {
+      return shouldClamp ? this.model.plungeThreshold : Number.NaN;
+    }
+
+    if (shouldClamp) {
+      return clamp(value, PLUNGE_THRESHOLD_MIN, PLUNGE_THRESHOLD_MAX);
+    }
+
+    if (value < PLUNGE_THRESHOLD_MIN || value > PLUNGE_THRESHOLD_MAX) {
+      return Number.NaN;
+    }
+
+    return value;
   }
 
   pushChange() {
@@ -189,7 +249,7 @@ class BeachFilters extends HTMLElement {
           <label class="field">
             <span>Plunge threshold</span>
             <div class="threshold-field">
-              <input type="number" name="plunge" min="45" max="75" step="1">
+              <input type="number" name="plunge" min="${PLUNGE_THRESHOLD_MIN}" max="${PLUNGE_THRESHOLD_MAX}" step="1" inputmode="numeric">
               <strong data-role="threshold-value"></strong>
             </div>
           </label>
